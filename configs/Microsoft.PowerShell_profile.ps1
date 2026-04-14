@@ -167,7 +167,12 @@ $ErrorView = 'ConciseView'
 
 #copilot --resume --alt-screen --yolo
 
-
+#C:\Users\aelkhashab\AppData\Local\Programs\oh-my-posh\bin\
+#C:\Users\aelkhashab\AppData\Roaming\agency\CurrentVersion
+#C:\Users\aelkhashab\AppData\Local\Microsoft\WindowsApps
+#C:\Users\aelkhashab\AppData\Local\Programs\Microsoft VS Code\bin
+#C:\Users\aelkhashab\AppData\Local\Microsoft\WinGet\Packages\GitHub.Copilot_Microsoft.Winget.Source_8wekyb3d8bbwe
+#C:\Users\aelkhashab\AppData\Roaming\npm
 #C:\Program Files\Midnight Commander
 #Install-PSResource -Name NerdFonts
 #Import-Module -Name NerdFonts
@@ -187,3 +192,16 @@ $env:PATH += ";C:\Program Files\Midnight Commander\"
 #/plugin marketplace add github/copilot-plugins​
 #/plugin install workiq@copilot-plugins​
 #winget install -e --id OpenJS.NodeJS
+
+
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class Mouse {
+	  [DllImport("user32.dll")]
+	    public static extern bool SwapMouseButton(bool swap);
+}
+"@
+
+#usage: [Mouse]::SwapMouseButton($false)
+
