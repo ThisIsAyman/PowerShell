@@ -13,6 +13,46 @@ param(
     [switch]$yolo
 )
 
+# ── Bootstrap: Ensure PowerShell 7 ──────────────────────────
+# Windows ships with PowerShell 5.1 which lacks features this
+# script requires (expression-assignment, etc.).  If we detect
+# 5.1, install PS 7 via winget, then re-launch the script in pwsh.
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    # Need admin for winget — elevate first if necessary
+    $current = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
+    if (-not $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "`n⚡ Elevating to Administrator to install PowerShell 7..." -ForegroundColor Yellow
+        $params = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$PSCommandPath`"")
+        if ($yolo) { $params += "-yolo" }
+        Start-Process powershell -ArgumentList $params -Verb RunAs
+        exit
+    }
+
+    # Check whether pwsh is already on PATH (PS7 installed but script invoked from 5.1)
+    $pwshExists = Get-Command pwsh -ErrorAction SilentlyContinue
+    if (-not $pwshExists) {
+        Write-Host "`n🔧 Windows PowerShell 5.1 detected — installing PowerShell 7..." -ForegroundColor Yellow
+        winget install --id Microsoft.PowerShell -e --accept-source-agreements --accept-package-agreements --silent
+        # Refresh PATH so we can find the newly-installed pwsh
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
+                    [System.Environment]::GetEnvironmentVariable("Path", "User")
+    }
+
+    # Verify pwsh is now available
+    $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+    if (-not $pwshCmd) {
+        Write-Host "❌ Failed to find pwsh after installation. Please install PowerShell 7 manually:" -ForegroundColor Red
+        Write-Host "   https://aka.ms/install-powershell" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "✅ PowerShell 7 ready. Relaunching script in pwsh...`n" -ForegroundColor Green
+    $params = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $PSCommandPath)
+    if ($yolo) { $params += "-yolo" }
+    & pwsh @params
+    exit $LASTEXITCODE
+}
+
 # ── Self-elevate to Admin ────────────────────────────────────
 function Assert-Admin {
     $current = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
@@ -241,9 +281,9 @@ function Show-Menu {
         Write-Host ""
 
         for ($i = 0; $i -lt $keys.Count; $i++) {
-            $check  = if ($selected[$i]) { "✅" } else { "⬜" }
-            $prefix = if ($i -eq $cursor) { " ▶ " } else { "   " }
-            $color  = if ($i -eq $cursor) { "Yellow" } else { "White" }
+            $check  = $(if ($selected[$i]) { "✅" } else { "⬜" })
+            $prefix = $(if ($i -eq $cursor) { " ▶ " } else { "   " })
+            $color  = $(if ($i -eq $cursor) { "Yellow" } else { "White" })
             Write-Host "$prefix$check  $($keys[$i])" -ForegroundColor $color
         }
 
