@@ -71,14 +71,21 @@ There are two install paths: **automated** (recommended) or **manual**.
 
 ### Option A — Automated Script (Recommended)
 
-The bootstrap script detects what's already installed, installs what's missing, and upgrades what's outdated.
+The bootstrap script works from **either PowerShell 5.1 or PowerShell 7**. If you only have PowerShell 5 (the default on Windows), it will install PowerShell 7 for you automatically.
 
 1. Clone or download this repo
-2. Open the folder
-3. **Extract** the ZIP file (right-click → Extract All)
-4. Open the extracted folder
-5. **Double-click** `Install-CopilotCLI-Prereqs.bat`
-6. The script will prompt you to install required & optional items — answer **Y/N** as appropriate
+2. Open the extracted folder in a terminal (**PowerShell 5 or 7 — either works**)
+3. Run the bootstrap script:
+   ```powershell
+   .\Setup-Terminal.ps1
+   ```
+   Or for non-interactive mode (install everything, no prompts):
+   ```powershell
+   .\Setup-Terminal.ps1 -yolo
+   ```
+4. **If running from PowerShell 5:** the script will automatically install PowerShell 7 via `winget`, then relaunch itself under `pwsh` to continue the full setup
+5. **If running from PowerShell 7:** the script proceeds directly to the interactive setup menu
+6. Answer **Y/N** to install required & optional items:
    - ✅ **Required:** PowerShell 7, Git, GitHub Copilot CLI
    - 📦 **Optional:** Node.js, Python, Azure CLI
 7. When complete, the terminal will close
@@ -87,7 +94,9 @@ The bootstrap script detects what's already installed, installs what's missing, 
 10. Copilot should start up! 🎉
 11. Select **"Yes"** when asked about trusting files in the folder
 
-> 📝 A full session log is saved as `bootstrap-log-YYYYMMDD-HHMMSS.txt` in the script folder.
+> 💡 **Don't have `winget`?** If the script can't find winget, it will print a link to download PowerShell 7 manually.
+
+> 📝 The setup is split into two files: `Setup-Terminal.ps1` (PS5-compatible bootstrap) launches `Setup-Terminal-Main.ps1` (full setup, requires PS7).
 
 ### Option B — Manual Install (Fallback)
 
