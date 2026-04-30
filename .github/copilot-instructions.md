@@ -7,7 +7,8 @@ This repository contains **terminal environment setup** files and the **GitHub C
 ## Architecture
 
 **Setup & Configs:**
-- `Setup-Terminal.ps1` — Automated installer with interactive menu (or `-yolo` mode)
+- `Setup-Terminal.ps1` — Bootstrap launcher (PS5-compatible, installs PS7 if needed)
+- `Setup-Terminal-Main.ps1` — Full setup with interactive menu (or `-yolo` mode, requires PS7)
 - `configs/Microsoft.PowerShell_profile.ps1` — PowerShell 7 profile (Oh My Posh, modules, OSC 9;9, aliases)
 - `configs/windows-terminal-settings.json` — Windows Terminal keybindings and profiles
 - `configs/example.omp.json` — Oh My Posh theme template
